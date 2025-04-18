@@ -13,19 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  emailVerified Boolean  @default(false)
-  emailVerifyToken   String?  @unique
-  role      Role
-  Acheteur  Acheteur?
-  Vendeur   Vendeur?
-  Admin     Admin?
-  Gestionnaire Gestionnaire?
-}
-
 enum Role {
   ADMIN
   ACHETEUR
@@ -33,37 +20,103 @@ enum Role {
   GESTIONNAIRE
 }
 
+model User {
+  id               Int      @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  email            String   @unique
+  password         String
+  emailVerified    Boolean  @default(false)
+  emailVerifyToken String?  @unique
+  role             Role
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  Acheteur     Acheteur?
+  Vendeur      Vendeur?
+  Gestionnaire Gestionnaire?
+  Admin        Admin?
+}
+
 model Acheteur {
-  id        String  @id @default(uuid())
-  userId    String  @unique
-  user      User    @relation(fields: [userId], references: [id])
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  user      User       @relation(fields: [userId], references: [id])
   // Champs spécifiques à un Acheteur
-  adresse   String?
+  commandes Commande[]
+  panier    Panier?
 }
 
 model Vendeur {
-  id        String  @id @default(uuid())
-  userId    String  @unique
-  user      User    @relation(fields: [userId], references: [id])
+  id          Int       @id @default(autoincrement())
+  userId      Int       @unique
+  user        User      @relation(fields: [userId], references: [id])
   // Champs spécifiques à un Vendeur
-  boutique  String?
+  boutique    String?
+  isCertified Boolean   @default(false)
+  produits    Produit[]
+  marches     Marche[]  @relation("VendeurMarche")
 }
 
 model Admin {
-  id        String  @id @default(uuid())
-  userId    String  @unique
-  user      User    @relation(fields: [userId], references: [id])
+  id     Int     @id @default(autoincrement())
+  userId Int     @unique
+  user   User    @relation(fields: [userId], references: [id])
   // Champs spécifiques à un Admin
-  droits    String?
+  droits String?
 }
 
 model Gestionnaire {
-  id        String  @id @default(uuid())
-  userId    String  @unique
-  user      User    @relation(fields: [userId], references: [id])
+  id      Int      @id @default(autoincrement())
+  userId  Int      @unique
+  user    User     @relation(fields: [userId], references: [id])
   // Champs spécifiques à un Gestionnaire
-  region    String?
+  marches Marche[]
 }
 
+model Commande {
+  id           Int       @id @default(autoincrement())
+  acheteurId   Int
+  produitId    Int
+  isValidated  Boolean   @default(false)
+  isArchived   Boolean   @default(false)
+  hasAbortFlag Boolean   @default(false)
+  starReview   Int?
+  createdAt    DateTime  @default(now())
+  startedAt    DateTime
+  endedAt      DateTime?
 
+  acheteur Acheteur @relation(fields: [acheteurId], references: [id])
+  produit  Produit  @relation(fields: [produitId], references: [id])
+}
 
+model Produit {
+  id          Int        @id @default(autoincrement())
+  vendeurId   Int
+  name        String
+  description String
+  price       Float
+  commandes   Commande[]
+
+  vendeur Vendeur @relation(fields: [vendeurId], references: [id])
+}
+
+model Panier {
+  id          Int      @id @default(autoincrement())
+  idAcheteur  Int      @unique
+  totalAmount Float    @default(0)
+  acheteur    Acheteur @relation(fields: [idAcheteur], references: [id])
+}
+
+model Marche {
+  id             Int          @id @default(autoincrement())
+  name           String
+  address        String
+  starReview     Int
+  specialties    String[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  gestionnaire   Gestionnaire @relation(fields: [gestionnaireId], references: [id])
+  gestionnaireId Int
+  vendeurs       Vendeur[]    @relation("VendeurMarche")
+}
