@@ -43,9 +43,7 @@ export const PUT = withRole(["ADMIN"], async (req: NextRequest, context) => {
     data: {
       boutique: boutique ?? vendeur.boutique,
       user: {
-        update: {
-          email: email ?? vendeur.user.email,
-        },
+        
       },
     },
   });
