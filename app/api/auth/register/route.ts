@@ -6,7 +6,7 @@ import nodemailer from "nodemailer";
 import { sendEmailVerification } from "@/lib/email";
 
 export async function POST(request: Request) {
-  const { email, password, role, roleSpecificData } = await request.json();
+  const { email, password, role, firstName, lastName} = await request.json();
 
   const validRoles = ['ACHETEUR', 'VENDEUR', 'ADMIN', 'GESTIONNAIRE'];
   if (!validRoles.includes(role)) {
@@ -37,28 +37,24 @@ export async function POST(request: Request) {
     await prisma.vendeur.create({
       data: {
         userId: user.id,
-        boutique: roleSpecificData.boutique,
       },
     });
   } else if (role === 'ACHETEUR') {
     await prisma.acheteur.create({
       data: {
         userId: user.id,
-        adresse: roleSpecificData.adresse,
       },
     });
   } else if (role === 'ADMIN') {
     await prisma.admin.create({
       data: {
         userId: user.id,
-        droits: roleSpecificData.droits,
       },
     });
   } else if (role === 'GESTIONNAIRE') {
     await prisma.gestionnaire.create({
       data: {
         userId: user.id,
-        region: roleSpecificData.region,
       },
     });
   }
