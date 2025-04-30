@@ -12,7 +12,7 @@ export const PUT = withRole(['ADMIN'], async (req: NextRequest, context) => {
         email,
         password,
         Admin: {
-          update: { droits },
+          
         },
       },
       include: {
