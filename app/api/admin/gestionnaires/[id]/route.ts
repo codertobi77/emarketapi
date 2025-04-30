@@ -31,7 +31,7 @@ export const PUT = withRole(['ADMIN'], async (req: NextRequest, context) => {
           email,
           password,
           Gestionnaire: {
-            update: { region },
+            
           },
         },
         include: {
