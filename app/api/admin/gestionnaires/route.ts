@@ -17,7 +17,7 @@ export const GET = withRole(['ADMIN'], async (req) => {
         role: 'GESTIONNAIRE',
         email: { contains: emailFilter, mode: 'insensitive' },
         Gestionnaire: {
-          region: { contains: regionFilter, mode: 'insensitive' },
+          
         },
       },
       include: { Gestionnaire: true },
@@ -30,7 +30,7 @@ export const GET = withRole(['ADMIN'], async (req) => {
         role: 'GESTIONNAIRE',
         email: { contains: emailFilter, mode: 'insensitive' },
         Gestionnaire: {
-          region: { contains: regionFilter, mode: 'insensitive' },
+          
         },
       },
     }),
